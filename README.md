@@ -4,20 +4,13 @@ Lets users add formatters to VSCode that run locally defined scripts.
 
 ## Motivation
 
-VSCode's formatter features lets you quickly format code through the Format Document command (`shift+alt+f`)
-or automatically on save with the `editor.formatOnSave` option.
-
-However, the only way to add new formatters to VSCode is by installing an extension.
-If you have custom formatting tools or scripts you want to run, there's no easy way to integrate them with VSCode currently.
-
-This extension solves that problem by providing an easy way to register custom scripts as VSCode formatters.
-Here's an example of a custom python script that sorts imports and reformats code being run on a python file:
-
-![Extension in use](images/exampleUsecase.gif)
+This extension lets you run a user defined script to format your files.  
+It is based on https://marketplace.visualstudio.com/items?itemName=jkillian.custom-local-formatters
 
 
 ## Quickstart
-0. Install this extension through the VSCode extensions panel or [VSCode extensions marketplace](https://marketplace.visualstudio.com/items?itemName=jkillian.custom-local-formatters).
+
+0. Install this extension
 
 1. Define your custom formatting script.
    Scripts will receive the contents of the file to be formatted over STDIN.
@@ -38,13 +31,3 @@ Here's an example of a custom python script that sorts imports and reformats cod
 
 3. That's it! Your script is now integrated with VSCode as an official formatter.
    You can now format your code though the Format Document command (`shift+alt+f`), enable the `editor.formatOnSave` option, or use the formatter however else VSCode allows.
-
-## Extension Settings
-
-Full extension configuration schema and documentation can be found in the [`package.json`](package.json) file.
-
-## Known Limitations
-
-VSCode doesn't seem to provide a way to name the formatter which an extension creates.
-This means that if you register multiple formatters for the same language,
-they will unfortunately both show up as 'Custom Local Formatters' and it will be difficult to tell them apart.
