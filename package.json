@@ -1,35 +1,37 @@
 {
-  "name": "custom-local-formatters",
-  "displayName": "Custom Local Formatters",
-  "description": "Allows users to register custom local formatters for any language.",
-  "publisher": "jkillian",
-  "version": "0.0.6",
-  "repository": {
-    "url": "https://github.com/JKillian/vscode-custom-local-formatters"
-  },
+  "name": "customize-formatter",
+  "displayName": "Customize your Formatter",
+  "description": "🔧 Add customized scripts to the formatters. 🔧",
+  "version": "0.1.0",
+  "publisher": "franneck94",
   "license": "MIT",
+  "icon": "icon.png",
+  "galleryBanner": {
+    "color": "#9c9c9c",
+    "theme": "dark"
+  },
   "engines": {
-    "vscode": "^1.45.0"
+    "vscode": "^1.86.0"
   },
   "categories": [
     "Formatters"
   ],
-  "keywords": [
-    "formatter",
+  "tags": [
     "format",
-    "script",
-    "custom",
-    "local"
+    "workspace"
   ],
-  "icon": "images/logo.png",
-  "galleryBanner": {
-    "color": "#83E4C6",
-    "theme": "light"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/franneck94/vscode-Workspace-formatter.git"
   },
-  "main": "./out/extension.js",
+  "homepage": "https://github.com/franneck94/vscode-Workspace-formatter/README.md",
+  "bugs": {
+    "url": "https://github.com/franneck94/vscode-Workspace-formatter/issues"
+  },
   "activationEvents": [
-    "*"
+    "onStartupFinished"
   ],
+  "main": "./out/extension.js",
   "contributes": {
     "configuration": {
       "title": "Custom Local Formatters",
@@ -63,6 +65,30 @@
               "languages"
             ]
           }
+        },
+        "customLocalFormatters.includePattern": {
+          "type": "array",
+          "default": [
+            "*"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "List glob patterns to include for formatting. Note: Include pattern is used before the exclude pattern is applied.",
+          "scope": "resource"
+        },
+        "customLocalFormatters.excludePattern": {
+          "type": "array",
+          "default": [
+            "**/build",
+            "**/.*",
+            "**/.vscode"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "List glob patterns to exclude for formatting.",
+          "scope": "resource"
         }
       }
     }
@@ -86,7 +112,7 @@
     "glob": "^7.2.0",
     "mocha": "^9.1.2",
     "typescript": "^4.4.3",
-    "vsce": "^1.100.0",
+    "vsce": "^2.15.0",
     "vscode-test": "^1.6.1"
   }
 }
