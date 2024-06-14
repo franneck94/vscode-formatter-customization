@@ -16,7 +16,7 @@ So for example if you have selected clang-format for C/C++ files, you can add a 
    Valid language identifiers [can be found here](https://code.visualstudio.com/docs/languages/identifiers).
 
    ```json
-     "customLocalFormatters.formatters": [
+     "customizeFormatter.formatters": [
        {
          "command": "python format-yml-files.py",
          "languages": ["cpp"]

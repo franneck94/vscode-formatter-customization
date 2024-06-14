@@ -16,17 +16,20 @@
   "categories": [
     "Formatters"
   ],
-  "tags": [
+  "keywords": [
+    "formatter",
     "format",
-    "workspace"
+    "script",
+    "custom",
+    "local"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/franneck94/vscode-Workspace-formatter.git"
+    "url": "https://github.com/franneck94/vscode-formatter-customization.git"
   },
-  "homepage": "https://github.com/franneck94/vscode-Workspace-formatter/README.md",
+  "homepage": "https://github.com/franneck94/vscode-formatter-customization/README.md",
   "bugs": {
-    "url": "https://github.com/franneck94/vscode-Workspace-formatter/issues"
+    "url": "https://github.com/franneck94/vscode-formatter-customization/issues"
   },
   "activationEvents": [
     "onStartupFinished"
@@ -36,7 +39,7 @@
     "configuration": {
       "title": "Custom Local Formatters",
       "properties": {
-        "customLocalFormatters.formatters": {
+        "customizeFormatter.formatters": {
           "type": "array",
           "description": "Array of custom formatters",
           "default": [],
@@ -66,7 +69,7 @@
             ]
           }
         },
-        "customLocalFormatters.includePattern": {
+        "customizeFormatter.includePattern": {
           "type": "array",
           "default": [
             "*"
@@ -77,7 +80,7 @@
           "description": "List glob patterns to include for formatting. Note: Include pattern is used before the exclude pattern is applied.",
           "scope": "resource"
         },
-        "customLocalFormatters.excludePattern": {
+        "customizeFormatter.excludePattern": {
           "type": "array",
           "default": [
             "**/build",
@@ -114,5 +117,8 @@
     "typescript": "^4.4.3",
     "vsce": "^2.15.0",
     "vscode-test": "^1.6.1"
+  },
+  "dependencies": {
+    "minimatch": "^9.0.4"
   }
 }

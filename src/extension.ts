@@ -1,7 +1,8 @@
-import { exec } from 'child_process';
+import {exec} from 'child_process';
+import {minimatch} from 'minimatch';
 import * as vscode from 'vscode';
 
-import { Config, FormatterConfig } from './types';
+import {Config, FormatterConfig} from './types';
 
 const DEFAULT_GLOBAL_EXCLUDE: string[] = [];
 const DEFAULT_EXCLUDE_PATTERN: string[] = [
@@ -15,7 +16,7 @@ const globalExclude: string[] = DEFAULT_GLOBAL_EXCLUDE;
 let excludePattern: string[] = DEFAULT_EXCLUDE_PATTERN;
 
 let workspaceFolder: string | undefined;
-export const EXTENSION_NAME = 'Workspace_Formatter';
+export const EXTENSION_NAME = 'customizeFormatter';
 
 export let extensionContext: vscode.ExtensionContext | undefined;
 export let extensionState: vscode.Memento | undefined;
@@ -38,12 +39,12 @@ export function activate(context: vscode.ExtensionContext) {
         workspaceFolder = vscode.workspace.workspaceFolders[0].uri.fsPath;
 
     const outputChannel = vscode.window.createOutputChannel(
-        'Custom Local Formatters',
+        'Customize Formatters',
     );
     let disposables: readonly vscode.Disposable[] = [];
 
     vscode.workspace.onDidChangeConfiguration((e) => {
-        if (!e.affectsConfiguration('customLocalFormatters')) return;
+        if (!e.affectsConfiguration('customizeFormatter')) return;
         disposables.forEach((d) => d.dispose());
         disposables = registerFormatters(getFormatterConfigs(), outputChannel);
     });
@@ -53,9 +54,6 @@ export function activate(context: vscode.ExtensionContext) {
     extensionContext = context;
     extensionPath = context.extensionPath;
     extensionState = context.workspaceState;
-
-    loadGlobalExcludeSettings();
-    loadSettings();
 }
 
 function getExtensionSetting(name_: string, defaultValue: any) {
@@ -98,7 +96,7 @@ function loadSettings() {
 }
 
 const getFormatterConfigs = () => {
-    const config = vscode.workspace.getConfiguration('customLocalFormatters');
+    const config = vscode.workspace.getConfiguration('customizeFormatter');
     return config.get<Config['formatters']>('formatters', []);
 };
 
@@ -125,7 +123,32 @@ const registerFormatters = (
                                 '' + options.tabSize.toString,
                             );
 
+                        loadGlobalExcludeSettings();
+                        loadSettings();
                         const cwd = workspaceFolder;
+
+                        for (const pattern of excludePattern) {
+                            const exclude_file = minimatch(
+                                document.fileName,
+                                pattern,
+                            );
+                            if (exclude_file) {
+                                return new Promise<vscode.TextEdit[]>(
+                                    (_, __) => {
+                                        outputChannel.appendLine(
+                                            `Starting formatter: ${command}`,
+                                        );
+                                        const originalDocumentText =
+                                            document.getText();
+
+                                        process.stdin?.write(
+                                            originalDocumentText,
+                                        );
+                                        process.stdin?.end();
+                                    },
+                                );
+                            }
+                        }
 
                         return new Promise<vscode.TextEdit[]>(
                             (resolve, reject) => {
@@ -139,7 +162,7 @@ const registerFormatters = (
                                     {cwd},
                                     (error, stdout, stderr) => {
                                         if (error) {
-                                            outputChannel.appendLine(
+                                            vscode.window.showErrorMessage(
                                                 `Formatter failed: ${command}\nStderr:\n${stderr}`,
                                             );
                                             reject(error);
@@ -166,7 +189,7 @@ const registerFormatters = (
                                             `Finished running formatter: ${command}`,
                                         );
                                         if (stderr.length > 0) {
-                                            outputChannel.appendLine(
+                                            vscode.window.showErrorMessage(
                                                 `Possible issues ocurred:\n${stderr}`,
                                             );
                                         }
