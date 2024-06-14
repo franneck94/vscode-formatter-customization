@@ -1,7 +1,7 @@
-import {exec} from 'child_process';
+import { exec } from 'child_process';
 import * as vscode from 'vscode';
 
-import {Config, FormatterConfig} from './types';
+import { Config, FormatterConfig } from './types';
 
 const DEFAULT_GLOBAL_EXCLUDE: string[] = [];
 const DEFAULT_EXCLUDE_PATTERN: string[] = [
@@ -10,11 +10,9 @@ const DEFAULT_EXCLUDE_PATTERN: string[] = [
     '**/.*',
     '**/.vscode',
 ];
-const DEFAULT_INCLUDE_PATTERN: string[] = ['*'];
 
 const globalExclude: string[] = DEFAULT_GLOBAL_EXCLUDE;
 let excludePattern: string[] = DEFAULT_EXCLUDE_PATTERN;
-let includePattern: string[] = DEFAULT_INCLUDE_PATTERN;
 
 let workspaceFolder: string | undefined;
 export const EXTENSION_NAME = 'Workspace_Formatter';
@@ -93,10 +91,6 @@ function loadGlobalExcludeSettings() {
 }
 
 function loadSettings() {
-    includePattern = getExtensionSetting(
-        'includePattern',
-        DEFAULT_INCLUDE_PATTERN,
-    );
     excludePattern = getExtensionSetting(
         'excludePattern',
         DEFAULT_EXCLUDE_PATTERN,
