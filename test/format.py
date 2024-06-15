@@ -4,6 +4,7 @@ import re
 import sys
 from subprocess import Popen, PIPE
 import platform
+import shutil
 
 system_platform = platform.system()
 if system_platform == "Windows":
@@ -42,6 +43,13 @@ with open("{}/format.json".format(os.path.dirname(__file__))) as config_file:
 
 
 style_file = makeAbs(style_file)
+clang_exe = makeAbs(clang_exe) if is_win else clang_exe
+
+if not is_win and shutil.which(clang_exe) is None:
+    print(
+        f"'{clang_exe}' command is not found - you may need to install the formatter tool."
+    )
+    exit()
 
 lines = sys.stdin.readlines()
 fixed_lines = []
