@@ -1,8 +1,12 @@
 # Change Log
 
+## Version 0.4.0: Jun 17, 2024
+
+- Fixed ${workspaceFolder} not being parsed
+
 ## Version 0.3.0: Jun 17, 2024
 
-- Fixed rel exlude pattern logic
+- Fixed relative exlude pattern logic
 
 ## Version 0.2.0: Jun 14, 2024
 
