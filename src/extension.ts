@@ -113,6 +113,8 @@ const registerFormatters = (
                 formatter.languages,
                 {
                     provideDocumentFormattingEdits(document, options) {
+                        const cwd = workspaceFolder;
+
                         const command = formatter.command
                             .replace(/\${file}/g, document.fileName)
                             .replace(
@@ -122,11 +124,11 @@ const registerFormatters = (
                             .replace(
                                 /\${tabSize}/g,
                                 '' + options.tabSize.toString,
-                            );
+                            )
+                            .replace('${workspaceFolder}', cwd);
 
                         loadGlobalExcludeSettings();
                         loadSettings();
-                        const cwd = workspaceFolder;
 
                         for (const pattern of excludePattern) {
                             const exclude_file_abs = minimatch(

@@ -62,7 +62,7 @@
         "c",
         "cpp"
       ],
-      "command": "python C:/Users/Jan/Documents/_LocalCoding/vscode-formatter-customization/test/format.py"
+      "command": "python ${workspaceFolder}/.vscode/scripts/format.py"
     }
   ],
   "customizeFormatter.excludePattern": [
