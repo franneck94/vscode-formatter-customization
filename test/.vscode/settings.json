@@ -66,10 +66,8 @@
     }
   ],
   "customizeFormatter.excludePattern": [
-    "**/build",
-    "**/.*",
-    "**/.vscode",
-    "**/no_format_pls.c"
+    "**/no_format_pls.c",
+    "ASW/ABC/SWC_CDF/**/*"
   ],
   "[c]": {
     "editor.formatOnSave": false,
