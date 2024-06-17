@@ -15,7 +15,7 @@ const DEFAULT_EXCLUDE_PATTERN: string[] = [
 const globalExclude: string[] = DEFAULT_GLOBAL_EXCLUDE;
 let excludePattern: string[] = DEFAULT_EXCLUDE_PATTERN;
 
-let workspaceFolder: string | undefined;
+let workspaceFolder: string;
 export const EXTENSION_NAME = 'customizeFormatter';
 
 export let extensionContext: vscode.ExtensionContext | undefined;
@@ -37,6 +37,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     if (vscode.workspace.workspaceFolders.length === 1)
         workspaceFolder = vscode.workspace.workspaceFolders[0].uri.fsPath;
+    else workspaceFolder = '';
 
     const outputChannel = vscode.window.createOutputChannel(
         'Customize Formatters',
@@ -128,11 +129,19 @@ const registerFormatters = (
                         const cwd = workspaceFolder;
 
                         for (const pattern of excludePattern) {
-                            const exclude_file = minimatch(
+                            const exclude_file_abs = minimatch(
                                 document.fileName,
                                 pattern,
                             );
-                            if (exclude_file) {
+                            const rel_file_name = document.fileName
+                                .replace(cwd, '')
+                                .replace(/\\/g, '/')
+                                .replace(/^\/+/, '');
+                            const exclude_file_rel = minimatch(
+                                rel_file_name,
+                                pattern,
+                            );
+                            if (exclude_file_abs || exclude_file_rel) {
                                 return new Promise<vscode.TextEdit[]>(
                                     (_, __) => {
                                         outputChannel.appendLine(

@@ -2,9 +2,10 @@ import json
 import os
 import re
 import sys
+import shutil
 from subprocess import Popen, PIPE
 import platform
-import shutil
+
 
 system_platform = platform.system()
 if system_platform == "Windows":
@@ -13,18 +14,20 @@ else:
     is_win = False
 
 
-def makeAbs(path):
+def makeAbs(path: str) -> str:
     if not os.path.isabs(path):
         return os.path.join(os.path.dirname(__file__), os.path.normpath(path))
     else:
         return os.path.normpath(path)
 
 
-def indent(content, level, indentCnt, isElseIf=False):
+def indent(content: str, level: int, indentCnt: int, isElseIf: bool = False) -> str:
     add_space_to_indent = 1 if isElseIf else 0
-    return "{indent}{content}".format(
-        indent=" " * (level * indentCnt + add_space_to_indent), content=content.strip()
-    )
+    return "{indent}{content}".format(indent=" " * (level * indentCnt + add_space_to_indent), content=content.strip())
+
+
+def is_tool(name: str) -> bool:
+    return shutil.which(name) is not None
 
 
 clang_exe = "clang-format.exe" if is_win else "clang-format"
@@ -34,9 +37,7 @@ extraWhitespaces = 0
 
 with open("{}/format.json".format(os.path.dirname(__file__))) as config_file:
     config_json = json.load(config_file)
-    clang_exe = (
-        (config_json["clang_exe"] + ".exe") if is_win else config_json["clang_exe"]
-    )
+    clang_exe = (config_json["clang_exe"] + ".exe") if is_win else config_json["clang_exe"]
     style_file = config_json["style_file"]
     indentCnt = int(config_json["indent_count"])
     extraWhitespaces = int(config_json["extra_whitespaces"])
@@ -45,11 +46,11 @@ with open("{}/format.json".format(os.path.dirname(__file__))) as config_file:
 style_file = makeAbs(style_file)
 clang_exe = makeAbs(clang_exe) if is_win else clang_exe
 
-if not is_win and shutil.which(clang_exe) is None:
-    print(
-        f"'{clang_exe}' command is not found - you may need to install the formatter tool."
-    )
+if not is_win and not is_tool(clang_exe):
+    print(f"'{clang_exe}' command is not found - you may need to install the formatter tool.")
     exit()
+elif is_win and is_tool("clang-format.exe"):
+    clang_exe = "clang-format.exe"  # Use globally installed clang-format instead
 
 lines = sys.stdin.readlines()
 fixed_lines = []
@@ -72,32 +73,27 @@ try:
         stderr=PIPE,
     )
     comm = p.communicate(input="".join(lines).encode("utf-8"))
-    line = comm[0].decode(encoding="utf-8")
-    if comm[1]:
-        print(comm[1])
-        exit()
-    line_iter = iter(line.split("\n"))
 except FileNotFoundError as e:
-    print("Error: File not found -", e)
+    print("Clang-Format Call Error: ", e)
     exit()
+
+line = comm[0].decode(encoding="utf-8")
+if comm[1]:
+    print("Unknown Error: ", comm[1])
+    exit()
+line_iter = iter(line.split("\n"))
 
 # Here starts the ZF defined deviations from clang-format
 for line in line_iter:
     is_doxygen_comment = line[:2] == " *"
     full_line_is_regular_comment = line.strip()[:2] == "/*"
-    is_empty_scope_with_comment_only = (
-        line.strip()[:4] == "{ /*" or line.strip()[:4] == "{ //"
-    )
+    is_empty_scope_with_comment_only = line.strip()[:4] == "{ /*" or line.strip()[:4] == "{ //"
     if "// clang-format off" in line or "// clang-format on" in line:
         # Remove inserted clang-format-on/off statements
         continue
 
     use_line = " if" in line
-    do_not_ignore_line = (
-        line[-2:] != "//"
-        and not is_doxygen_comment
-        and not full_line_is_regular_comment
-    )
+    do_not_ignore_line = line[-2:] != "//" and not is_doxygen_comment and not full_line_is_regular_comment
 
     if use_line and do_not_ignore_line:
         line = line.strip("\n").strip("\r")
