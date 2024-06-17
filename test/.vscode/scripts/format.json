@@ -1,6 +1,6 @@
 {
     "clang_exe": "clang-format",
-    "style_file": ".clang-format",
+    "style_file": "../../.clang-format",
     "indent_count": 4,
     "extra_whitespaces": 0
 }
