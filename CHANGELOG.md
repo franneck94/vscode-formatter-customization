@@ -1,5 +1,9 @@
 # Change Log
 
+## Version 0.5.0: Jun 18, 2024
+
+- Added include pattern
+
 ## Version 0.4.0: Jun 17, 2024
 
 - Fixed ${workspaceFolder} not being parsed
