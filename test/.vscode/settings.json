@@ -69,6 +69,11 @@
     "**/no_format_pls.c",
     "ASW/ABC/SWC_CDF/**/*"
   ],
+  "customizeFormatter.includePattern": [
+    "ASW/LCA/**/*",
+    "**/format_pls.c",
+    "ASW/ABC/SWC_EFG/**/*"
+  ],
   "[c]": {
     "editor.formatOnSave": false,
     "editor.formatOnPaste": false,
