@@ -4,16 +4,11 @@ import * as vscode from 'vscode';
 
 import {Config, FormatterConfig} from './types';
 
-const DEFAULT_GLOBAL_EXCLUDE: string[] = [];
-const DEFAULT_EXCLUDE_PATTERN: string[] = [
-    '**/build',
-    '**/node_modules',
-    '**/.*',
-    '**/.vscode',
-];
+const DEFAULT_EXCLUDE_PATTERN: string[] = [];
+const DEFAULT_INCLUDE_PATTERN: string[] = [];
 
-const globalExclude: string[] = DEFAULT_GLOBAL_EXCLUDE;
 let excludePattern: string[] = DEFAULT_EXCLUDE_PATTERN;
+let includePattern: string[] = DEFAULT_INCLUDE_PATTERN;
 
 let workspaceFolder: string;
 export const EXTENSION_NAME = 'customizeFormatter';
@@ -75,24 +70,15 @@ export function getGlobalSetting(name: string, defaultValue: any) {
     return settingsValue;
 }
 
-function loadGlobalExcludeSettings() {
-    const globalExcludeObj = getGlobalSetting(
-        'files.exclude',
-        DEFAULT_GLOBAL_EXCLUDE,
-    );
-
-    const globalExcludeKeys = Object.keys(globalExcludeObj);
-
-    for (const key of globalExcludeKeys)
-        if (globalExcludeObj[key] === true) globalExclude.push(key);
-
-    excludePattern.push(...globalExclude);
-}
-
 function loadSettings() {
     excludePattern = getExtensionSetting(
         'excludePattern',
         DEFAULT_EXCLUDE_PATTERN,
+    );
+
+    includePattern = getExtensionSetting(
+        'includePattern',
+        DEFAULT_INCLUDE_PATTERN,
     );
 }
 
@@ -127,8 +113,40 @@ const registerFormatters = (
                             )
                             .replace('${workspaceFolder}', cwd);
 
-                        loadGlobalExcludeSettings();
                         loadSettings();
+
+                        let is_in_include_pattern = false;
+                        for (const pattern of includePattern) {
+                            const include_file_abs = minimatch(
+                                document.fileName,
+                                pattern,
+                            );
+                            const rel_file_name = document.fileName
+                                .replace(cwd, '')
+                                .replace(/\\/g, '/')
+                                .replace(/^\/+/, '');
+                            const include_file_rel = minimatch(
+                                rel_file_name,
+                                pattern,
+                            );
+                            if (include_file_abs || include_file_rel)
+                                is_in_include_pattern = true;
+                        }
+
+                        if (
+                            includePattern.length > 0 &&
+                            !is_in_include_pattern
+                        ) {
+                            return new Promise<vscode.TextEdit[]>((_, __) => {
+                                outputChannel.appendLine(
+                                    `File is not included for formatting: ${command}`,
+                                );
+                                const originalDocumentText = document.getText();
+
+                                process.stdin?.write(originalDocumentText);
+                                process.stdin?.end();
+                            });
+                        }
 
                         for (const pattern of excludePattern) {
                             const exclude_file_abs = minimatch(
@@ -147,7 +165,7 @@ const registerFormatters = (
                                 return new Promise<vscode.TextEdit[]>(
                                     (_, __) => {
                                         outputChannel.appendLine(
-                                            `Starting formatter: ${command}`,
+                                            `File is excluded from formatting: ${command}`,
                                         );
                                         const originalDocumentText =
                                             document.getText();
@@ -199,11 +217,6 @@ const registerFormatters = (
                                         outputChannel.appendLine(
                                             `Finished running formatter: ${command}`,
                                         );
-                                        if (stderr.length > 0) {
-                                            vscode.window.showErrorMessage(
-                                                `Possible issues ocurred:\n${stderr}`,
-                                            );
-                                        }
 
                                         resolve([
                                             new vscode.TextEdit(

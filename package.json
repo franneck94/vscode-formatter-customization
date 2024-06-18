@@ -2,7 +2,7 @@
   "name": "customize-formatter",
   "displayName": "Customize your Formatter",
   "description": "🔧 Add customized scripts to the formatters. 🔧",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "publisher": "franneck94",
   "license": "MIT",
   "icon": "icon.png",
@@ -82,11 +82,7 @@
         },
         "customizeFormatter.excludePattern": {
           "type": "array",
-          "default": [
-            "**/build",
-            "**/.*",
-            "**/.vscode"
-          ],
+          "default": [],
           "items": {
             "type": "string"
           },
