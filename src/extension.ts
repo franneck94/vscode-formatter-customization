@@ -117,6 +117,10 @@ const registerFormatters = (
 
                         let is_in_include_pattern = false;
                         for (const pattern of includePattern) {
+                            if (pattern === '*') {
+                                is_in_include_pattern = true;
+                                break;
+                            }
                             const include_file_abs = minimatch(
                                 document.fileName,
                                 pattern,

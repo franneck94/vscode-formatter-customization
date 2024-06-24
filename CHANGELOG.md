@@ -1,5 +1,9 @@
 # Change Log
 
+## Version 0.5.1: Jun 24, 2024
+
+- Fixed "*" include pattern
+
 ## Version 0.5.0: Jun 18, 2024
 
 - Added include pattern
